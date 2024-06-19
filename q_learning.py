@@ -83,7 +83,6 @@ def train_q_learning(env:gym.Env,
                  np.max(q_table[next_state]) - q_table[state][action])
 
             state = next_state
-            
 
             #! Step 5: Stop the episode if the agent reaches Goal or Hell-states
             #! -------
@@ -92,6 +91,8 @@ def train_q_learning(env:gym.Env,
 
         #! Step 6: Perform epsilon decay
         #! -------
+        print(f"Current Epsilon of Episode {episode}",epsilon)
+        
         epsilon = min(epsilon_min, epsilon * epsilon_decay)
 
         print(f"Episode {episode + 1}: Total Reward: {total_reward}")

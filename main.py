@@ -1,7 +1,7 @@
 from starways_env import create_env
 from q_learning import train_q_learning, visualize_q_table,test_q_table
 
-train = bool(int(input("Do you want to train model")))
+train = True
 visualize_results = True
 test_results = False
 
