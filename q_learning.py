@@ -23,13 +23,7 @@ def generate_random_int_without_repeat(low, high):
         SEQ.append(random_num)
         return random_num
 
-def generate_random_rand_without_repeat():
-    prev_num = None
-    while True:
-        random_num = np.random.rand()
-        if random_num != prev_num:
-            prev_num = random_num
-            return random_num
+
 
 def train_q_learning(env:gym.Env,
                      no_episodes,
@@ -54,8 +48,7 @@ def train_q_learning(env:gym.Env,
 
         state, _ = env.reset()
             
-        # if(valid_size(state=state,env=env) == False ):
-        #     state, _ = env.reset()
+       
             
 
         state = tuple(state)
@@ -67,15 +60,15 @@ def train_q_learning(env:gym.Env,
             #! Step 3: Define your Exploration vs. Exploitation
             #! -------
             env.agent_health = 100
-            random_rand = generate_random_rand_without_repeat()
+            random_rand = np.random.rand()
             if random_rand < epsilon:
-                # action = env.action_space.sample()  # Explore
-                action=generate_random_int_without_repeat(0,5)
+                action = env.action_space.sample()  # Explore
+                # action=generate_random_int_without_repeat(0,5)
             else:
                 action = np.argmax(q_table[state])  # Exploit
 
             next_state, reward, done, _ = env.step(action)
-            env.render()
+            # env.render()
 
             next_state = tuple(next_state)
             
@@ -99,7 +92,7 @@ def train_q_learning(env:gym.Env,
 
         #! Step 6: Perform epsilon decay
         #! -------
-        epsilon = max(epsilon_min, epsilon * epsilon_decay)
+        epsilon = min(epsilon_min, epsilon * epsilon_decay)
 
         print(f"Episode {episode + 1}: Total Reward: {total_reward}")
 
@@ -141,8 +134,8 @@ def visualize_q_table(hell_state_coordinates=[(2, 1), (0, 4)],
             # ------------------------------------------------
             mask = np.zeros_like(heatmap_data, dtype=bool)
             mask[goal_coordinates] = True
-            mask[hell_state_coordinates[0]] = True
-            mask[hell_state_coordinates[1]] = True
+            for indx in range(len(hell_state_coordinates)):
+                mask[hell_state_coordinates[indx]] = True
 
             sns.heatmap(heatmap_data, annot=True, fmt=".2f", cmap="viridis",
                         ax=ax, cbar=False, mask=mask, annot_kws={"size": 9})
@@ -152,10 +145,11 @@ def visualize_q_table(hell_state_coordinates=[(2, 1), (0, 4)],
             ax.text(goal_coordinates[1] + 0.5, goal_coordinates[0] + 0.5, 'G', color='green',
                     ha='center', va='center', weight='bold', fontsize=14)
             
-            ax.text(hell_state_coordinates[0][1] + 0.5, hell_state_coordinates[0][0] + 0.5, 'H', color='red',
-                    ha='center', va='center', weight='bold', fontsize=14)
-            ax.text(hell_state_coordinates[1][1] + 0.5, hell_state_coordinates[1][0] + 0.5, 'H', color='red',
-                    ha='center', va='center', weight='bold', fontsize=14)
+            for row in range(len(hell_state_coordinates)):
+                ax.text(hell_state_coordinates[row][1] + 0.5, hell_state_coordinates[row][0] + 0.5, 'H', color='red',
+                        ha='center', va='center', weight='bold', fontsize=14)
+            
+            
 
             ax.set_title(f'Action: {action}')
 

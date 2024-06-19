@@ -1,7 +1,7 @@
 from starways_env import create_env
 from q_learning import train_q_learning, visualize_q_table,test_q_table
 
-train = False
+train = bool(int(input("Do you want to train model")))
 visualize_results = True
 test_results = False
 
@@ -10,7 +10,7 @@ gamma = 0.99  # Discount factor
 epsilon = 1.0  # Exploration rate
 epsilon_min = 0.1  # Minimum exploration rate
 epsilon_decay = 0.992  # Decay rate for exploration
-no_episodes = 200  # Number of episodes
+no_episodes = 1000  # Number of episodes
 
 goal_coordinates = (9, 9)
 # Define all hell state coordinates as a tuple within a list
