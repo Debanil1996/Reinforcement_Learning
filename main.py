@@ -2,9 +2,10 @@ from constants import HELL_COORDINATE_POINTS
 from starways_env import create_env
 from q_learning import train_q_learning, visualize_q_table,test_q_table
 
-train = True
-visualize_results = True
-test_results = False
+train = False
+train_render = False
+visualize_results = False
+test_results = True
 
 learning_rate = 0.01  # Learning rate
 gamma = 0.99  # Discount factor
@@ -14,19 +15,7 @@ epsilon_decay = 0.999  # Decay rate for exploration
 no_episodes = 10_000  # Number of episodes
 
 goal_coordinates = (9, 9)
-# Define all hell state coordinates as a tuple within a list
-# hell_state_coordinates = [
-#     (0, 5),
-#     (1, 3),
-#     (2, 8),
-#     (3, 6),
-#     (4, 1),
-#     (5, 9),
-#     (6, 7),
-#     (7, 3),
-#     (8, 1),
-#     (9, 3)
-# ]
+
 hell_state_coordinates = HELL_COORDINATE_POINTS
 
 
@@ -41,7 +30,8 @@ if train:
                      epsilon_min=epsilon_min,
                      epsilon_decay=epsilon_decay,
                      alpha=learning_rate,
-                     gamma=gamma)
+                     gamma=gamma,
+                     train_render=train_render)
     
     
 if visualize_results:

@@ -34,7 +34,8 @@ def train_q_learning(env:gym.Env,
                      epsilon_decay,
                      alpha,
                      gamma,
-                     q_table_save_path="q_table.npy"):
+                     q_table_save_path="q_table.npy",
+                     train_render=True):
 
     # Initialize the Q-table:
     # -----------------------
@@ -69,7 +70,8 @@ def train_q_learning(env:gym.Env,
                 action = np.argmax(q_table[state])  # Exploit
 
             next_state, reward, done, _ = env.step(action)
-            #env.render()
+            if(train_render):
+                env.render()
 
             next_state = tuple(next_state)
             
@@ -177,28 +179,16 @@ def test_q_table(env, no_episodes, epsilon, q_table_save_path="q_table.npy", act
     total_reward = 0
     path = [state]
     done= False
-    prev_action = ""
-    mappedAction = {}
+    steps=0
+    print("Path of the Agent:")
     while not done:
-        print(len(mappedAction))
-        if len(mappedAction) == 0:
-            prev_action = ""
-            mappedAction = {action: 0 for action in actions}
-            for indx, action in enumerate(actions):
-                np_arrayed = np.array(loaded_q_table[:][:][indx])
-                mappedAction[action] = reduce(lambda x, y: x + y, np_arrayed.flatten())
-        
-           
+        mappedAction = {action: 0 for action in actions}
+        for indx, action in enumerate(actions):
+            mappedAction[action] = loaded_q_table[state[0]][state[1]][indx]
+         
         max_key = max(mappedAction, key=mappedAction.get)
-        while max_key == prev_action:
-            mappedAction.pop(max_key)
-            max_key = max(mappedAction, key=mappedAction.get)
-        prev_action  = max_key
         maxActionValue = [indx for indx,val in enumerate(actions) if val == max_key ][0]
-        
-        action = maxActionValue if any(mappedAction) else generate_random_int_without_repeat(0,4)
-        
-            
+        action = maxActionValue
         next_state, reward, done, _ = env.step(action)
         env.render()
 
@@ -206,9 +196,12 @@ def test_q_table(env, no_episodes, epsilon, q_table_save_path="q_table.npy", act
         total_reward += reward
         path.append(next_state)
         state = next_state
-
+        steps+=1
         if done:
             break
+        
+        print(state)
+    print("Total Steps",steps,"\n Total Reward",total_reward)
 
 
 
