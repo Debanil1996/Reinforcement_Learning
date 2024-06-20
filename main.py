@@ -1,9 +1,10 @@
+from constants import HELL_COORDINATE_POINTS
 from starways_env import create_env
 from q_learning import train_q_learning, visualize_q_table,test_q_table
 
-train = True
+train = False
 visualize_results = False
-test_results = False
+test_results = True
 
 learning_rate = 0.01  # Learning rate
 gamma = 0.99  # Discount factor
@@ -26,13 +27,7 @@ goal_coordinates = (9, 9)
 #     (8, 1),
 #     (9, 3)
 # ]
-hell_state_coordinates = [
-    (0, 5),
-    (3, 6),
-    (6, 7),
-    (7, 3),
-    (8, 1),
-]
+hell_state_coordinates = HELL_COORDINATE_POINTS
 
 
 if train:

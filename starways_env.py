@@ -11,7 +11,9 @@ import pygame
 import math
 import random
 import os
-import time 
+import time
+
+from constants import HELL_COORDINATE_POINTS 
 
 
 # In[4]:
@@ -114,7 +116,11 @@ class starEnv(gym.Env):
             array,string: To know that the game has been reset
         """
         if train:
-            randomState = (np.random.randint(0,self.grid_size), np.random.randint(0,self.grid_size))
+            excluded_coordinates = [*HELL_COORDINATE_POINTS, (9, 9)]
+            all_coordinates = [(i, j) for i in range(10) for j in range(10)]
+            valid_coordinates = [coord for coord in all_coordinates if coord not in excluded_coordinates]
+            selected_coordinate = np.random.choice(valid_coordinates, len(valid_coordinates), replace=False)
+            randomState = (selected_coordinate[0], selected_coordinate[1])
         else:
             randomState = (0,0)
             

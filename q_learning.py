@@ -181,7 +181,7 @@ def test_q_table(env, no_episodes, epsilon, q_table_save_path="q_table.npy", act
             
         max_key = max(mappedAction, key=mappedAction.get)
         maxActionValue = [indx for indx,val in enumerate(actions) if val == max_key ][0]
-        action = maxActionValue
+        action = generate_random_int_without_repeat(0,4) if any(mappedAction) else maxActionValue
         next_state, reward, done, _ = env.step(action)
         env.render()
 
