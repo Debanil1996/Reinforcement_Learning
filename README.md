@@ -5,3 +5,6 @@
 
 ### When you want to generate a container to build the image
 ```caffeinate -i docker run --name starwayscontainer -it my-app /bin/bash```
+
+### When you want to run only the container
+``` caffeinate -i docker exec -it starwayscontainer /bin/bash ```

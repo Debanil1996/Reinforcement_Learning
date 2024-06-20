@@ -43,7 +43,6 @@ def train_q_learning(env:gym.Env,
     #! Step 1: Run the algorithm for fixed number of episodes
     #! -------
     isLooped = False
-    state=(0,0)
     for episode in range(no_episodes):
 
         state, _ = env.reset()
@@ -56,19 +55,19 @@ def train_q_learning(env:gym.Env,
 
         #! Step 2: Take actions in the environment until "Done" flag is triggered
         #! -------
-        while True:
+        for _ in range(1_000):
             #! Step 3: Define your Exploration vs. Exploitation
             #! -------
             env.agent_health = 100
             random_rand = np.random.rand()
             if random_rand < epsilon:
-                action = env.action_space.sample()  # Explore
-                # action=generate_random_int_without_repeat(0,5)
+                # action = env.action_space.sample()  # Explore
+                action=generate_random_int_without_repeat(0,4)
             else:
                 action = np.argmax(q_table[state])  # Exploit
 
             next_state, reward, done, _ = env.step(action)
-            # env.render()
+            #env.render()
 
             next_state = tuple(next_state)
             
@@ -162,45 +161,39 @@ def visualize_q_table(hell_state_coordinates=[(2, 1), (0, 4)],
         
         
         
-def test_q_table(env:gym.Env,
-                     no_episodes,
-                     epsilon,
-                     epsilon_min,
-                     epsilon_decay,
-                     alpha,
-                     gamma,
-                     q_table_save_path="q_table.npy"):
-
-    # Loading the Q-table
-    loaded_q_table = np.load(q_table_save_path)
+def test_q_table(env, no_episodes, epsilon, q_table_save_path="q_table.npy", actions=["Up", "Down", "Right", "Left"]):
+    try:
+        loaded_q_table = np.load(q_table_save_path)
+    except FileNotFoundError:
+        print("No saved Q-table found. Please train the Q-learning agent first or check your path.")
+        return
     
     state, _ = env.reset(train=False)
     state = tuple(state)
     total_reward = 0
     path = [state]
+    done= False
 
-    while True:
-        # Choose the action with the highest positive Q-value
-        positive_q_indices = np.where(loaded_q_table[state] > 0)[0]
-        print('positive_q_indices: ', positive_q_indices)
-        if len(positive_q_indices) > 0:
-            action = np.random.choice(positive_q_indices)
-        else:
-            action = np.argmax(loaded_q_table[state])
-
-        print("ACTION IN TESTING: ",action)
+    while not done:
+        mappedAction = {action: 0 for action in actions}
+        for indx, action in enumerate(actions):
+            mappedAction[action] = loaded_q_table[state[0]][state[1]][indx]
+            
+        max_key = max(mappedAction, key=mappedAction.get)
+        maxActionValue = [indx for indx,val in enumerate(actions) if val == max_key ][0]
+        action = maxActionValue
         next_state, reward, done, _ = env.step(action)
         env.render()
 
         next_state = tuple(next_state)
         total_reward += reward
         path.append(next_state)
-
         state = next_state
 
         if done:
             break
 
-    print(f"Test Path: {path}")
-    print(f"Total Reward: {total_reward}")
+
+
+
     

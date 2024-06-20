@@ -59,7 +59,7 @@ class starEnv(gym.Env):
         
 
         # Action-space:
-        self.action_space = gym.spaces.Discrete(grid_size)
+        self.action_space = gym.spaces.Discrete(4)
         
         # Observation space:
         self.observation_space = gym.spaces.Box(low=0, high=grid_size-1, shape=(2,), dtype=np.int32)
@@ -197,7 +197,7 @@ class starEnv(gym.Env):
 
         # If agent reaches the Hurdle  🥅 States
         elif True in [np.array_equal(self.state,each_hurdle) for each_hurdle in self.hurdle_states]:
-            self.reward += -100
+            self.reward += -10
             self.done = True
 
         else:
