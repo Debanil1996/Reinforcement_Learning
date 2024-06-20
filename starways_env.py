@@ -11,7 +11,9 @@ import pygame
 import math
 import random
 import os
-import time 
+import time
+
+from constants import HELL_COORDINATE_POINTS 
 
 
 # In[4]:
@@ -59,7 +61,7 @@ class starEnv(gym.Env):
         
 
         # Action-space:
-        self.action_space = gym.spaces.Discrete(grid_size)
+        self.action_space = gym.spaces.Discrete(4)
         
         # Observation space:
         self.observation_space = gym.spaces.Box(low=0, high=grid_size-1, shape=(2,), dtype=np.int32)
@@ -114,10 +116,15 @@ class starEnv(gym.Env):
             array,string: To know that the game has been reset
         """
         if train:
-            randomState = (np.random.randint(0,self.grid_size), np.random.randint(0,self.grid_size))
+            excluded_coordinates = [*HELL_COORDINATE_POINTS, (9, 9)]
+            coordinate = (np.random.randint(0, 9), np.random.randint(0, 9))
+            #coordinate = (0,0)
+            while coordinate in excluded_coordinates:
+                coordinate = (np.random.randint(0, 9), np.random.randint(0, 9))
+            randomState = (coordinate[0], coordinate[1])
         else:
             randomState = (0,0)
-            
+        
         self.state = np.array(randomState)
         self.done = False
         self.reward = 0
@@ -197,14 +204,14 @@ class starEnv(gym.Env):
 
         # If agent reaches the Hurdle  🥅 States
         elif True in [np.array_equal(self.state,each_hurdle) for each_hurdle in self.hurdle_states]:
-            self.reward += -100
+            self.reward += -10
             self.done = True
 
         else:
             # Logic is that when agent is close to one block from the hell state
             ## 1 is for one block from the hell states
             if distance_from_closest_hurdle["distance"] <= 1.5:
-                self.reward   += -((round(distance_from_closest_hurdle["distance"]))*10)
+                self.reward   += -((round(distance_from_closest_hurdle["distance"]))*2)
             else:
                 self.reward = 0
                 

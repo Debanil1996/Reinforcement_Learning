@@ -1,10 +1,12 @@
 # Imports:
 # --------
+from functools import reduce
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import copy
 import gymnasium as gym
+import os
 
 
 # Function 1: Train Q-learning agent
@@ -23,13 +25,7 @@ def generate_random_int_without_repeat(low, high):
         SEQ.append(random_num)
         return random_num
 
-def generate_random_rand_without_repeat():
-    prev_num = None
-    while True:
-        random_num = np.random.rand()
-        if random_num != prev_num:
-            prev_num = random_num
-            return random_num
+
 
 def train_q_learning(env:gym.Env,
                      no_episodes,
@@ -49,13 +45,11 @@ def train_q_learning(env:gym.Env,
     #! Step 1: Run the algorithm for fixed number of episodes
     #! -------
     isLooped = False
-    state=(0,0)
     for episode in range(no_episodes):
 
         state, _ = env.reset()
             
-        # if(valid_size(state=state,env=env) == False ):
-        #     state, _ = env.reset()
+       
             
 
         state = tuple(state)
@@ -63,19 +57,19 @@ def train_q_learning(env:gym.Env,
 
         #! Step 2: Take actions in the environment until "Done" flag is triggered
         #! -------
-        while True:
+        for _ in range(1_000):
             #! Step 3: Define your Exploration vs. Exploitation
             #! -------
             env.agent_health = 100
-            random_rand = generate_random_rand_without_repeat()
+            random_rand = np.random.rand()
             if random_rand < epsilon:
                 # action = env.action_space.sample()  # Explore
-                action=generate_random_int_without_repeat(0,5)
+                action=generate_random_int_without_repeat(0,4)
             else:
                 action = np.argmax(q_table[state])  # Exploit
 
             next_state, reward, done, _ = env.step(action)
-            env.render()
+            #env.render()
 
             next_state = tuple(next_state)
             
@@ -90,7 +84,6 @@ def train_q_learning(env:gym.Env,
                  np.max(q_table[next_state]) - q_table[state][action])
 
             state = next_state
-            
 
             #! Step 5: Stop the episode if the agent reaches Goal or Hell-states
             #! -------
@@ -99,6 +92,8 @@ def train_q_learning(env:gym.Env,
 
         #! Step 6: Perform epsilon decay
         #! -------
+        print(f"Current Epsilon of Episode {episode}",epsilon)
+        
         epsilon = max(epsilon_min, epsilon * epsilon_decay)
 
         print(f"Episode {episode + 1}: Total Reward: {total_reward}")
@@ -110,7 +105,9 @@ def train_q_learning(env:gym.Env,
 
     #! Step 8: Save the trained Q-table
     #! -------
+    idpath = os.path.join("npyfiles",str(id(q_table))+q_table_save_path)
     np.save(q_table_save_path, q_table)
+    np.save(idpath,q_table)
     print("Q Table",q_table)
     print("Saved the Q-table.")
 
@@ -141,8 +138,8 @@ def visualize_q_table(hell_state_coordinates=[(2, 1), (0, 4)],
             # ------------------------------------------------
             mask = np.zeros_like(heatmap_data, dtype=bool)
             mask[goal_coordinates] = True
-            mask[hell_state_coordinates[0]] = True
-            mask[hell_state_coordinates[1]] = True
+            for indx in range(len(hell_state_coordinates)):
+                mask[hell_state_coordinates[indx]] = True
 
             sns.heatmap(heatmap_data, annot=True, fmt=".2f", cmap="viridis",
                         ax=ax, cbar=False, mask=mask, annot_kws={"size": 9})
@@ -152,10 +149,11 @@ def visualize_q_table(hell_state_coordinates=[(2, 1), (0, 4)],
             ax.text(goal_coordinates[1] + 0.5, goal_coordinates[0] + 0.5, 'G', color='green',
                     ha='center', va='center', weight='bold', fontsize=14)
             
-            ax.text(hell_state_coordinates[0][1] + 0.5, hell_state_coordinates[0][0] + 0.5, 'H', color='red',
-                    ha='center', va='center', weight='bold', fontsize=14)
-            ax.text(hell_state_coordinates[1][1] + 0.5, hell_state_coordinates[1][0] + 0.5, 'H', color='red',
-                    ha='center', va='center', weight='bold', fontsize=14)
+            for row in range(len(hell_state_coordinates)):
+                ax.text(hell_state_coordinates[row][1] + 0.5, hell_state_coordinates[row][0] + 0.5, 'H', color='red',
+                        ha='center', va='center', weight='bold', fontsize=14)
+            
+            
 
             ax.set_title(f'Action: {action}')
 
@@ -167,45 +165,52 @@ def visualize_q_table(hell_state_coordinates=[(2, 1), (0, 4)],
         
         
         
-def test_q_table(env:gym.Env,
-                     no_episodes,
-                     epsilon,
-                     epsilon_min,
-                     epsilon_decay,
-                     alpha,
-                     gamma,
-                     q_table_save_path="q_table.npy"):
-
-    # Loading the Q-table
-    loaded_q_table = np.load(q_table_save_path)
+def test_q_table(env, no_episodes, epsilon, q_table_save_path="q_table.npy", actions=["Up", "Down", "Right", "Left"]):
+    try:
+        loaded_q_table = np.load(q_table_save_path)
+    except FileNotFoundError:
+        print("No saved Q-table found. Please train the Q-learning agent first or check your path.")
+        return
     
     state, _ = env.reset(train=False)
     state = tuple(state)
     total_reward = 0
     path = [state]
-
-    while True:
-        # Choose the action with the highest positive Q-value
-        positive_q_indices = np.where(loaded_q_table[state] > 0)[0]
-        print('positive_q_indices: ', positive_q_indices)
-        if len(positive_q_indices) > 0:
-            action = np.random.choice(positive_q_indices)
-        else:
-            action = np.argmax(loaded_q_table[state])
-
-        print("ACTION IN TESTING: ",action)
+    done= False
+    prev_action = ""
+    mappedAction = {}
+    while not done:
+        print(len(mappedAction))
+        if len(mappedAction) == 0:
+            prev_action = ""
+            mappedAction = {action: 0 for action in actions}
+            for indx, action in enumerate(actions):
+                np_arrayed = np.array(loaded_q_table[:][:][indx])
+                mappedAction[action] = reduce(lambda x, y: x + y, np_arrayed.flatten())
+        
+           
+        max_key = max(mappedAction, key=mappedAction.get)
+        while max_key == prev_action:
+            mappedAction.pop(max_key)
+            max_key = max(mappedAction, key=mappedAction.get)
+        prev_action  = max_key
+        maxActionValue = [indx for indx,val in enumerate(actions) if val == max_key ][0]
+        
+        action = maxActionValue if any(mappedAction) else generate_random_int_without_repeat(0,4)
+        
+            
         next_state, reward, done, _ = env.step(action)
         env.render()
 
         next_state = tuple(next_state)
         total_reward += reward
         path.append(next_state)
-
         state = next_state
 
         if done:
             break
 
-    print(f"Test Path: {path}")
-    print(f"Total Reward: {total_reward}")
+
+
+
     
