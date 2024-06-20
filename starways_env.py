@@ -117,13 +117,14 @@ class starEnv(gym.Env):
         """
         if train:
             excluded_coordinates = [*HELL_COORDINATE_POINTS, (9, 9)]
-            all_coordinates = [(i, j) for i in range(10) for j in range(10)]
-            valid_coordinates = [coord for coord in all_coordinates if coord not in excluded_coordinates]
-            selected_coordinate = np.random.choice(valid_coordinates, len(valid_coordinates), replace=False)
-            randomState = (selected_coordinate[0], selected_coordinate[1])
+            coordinate = (np.random.randint(0, 9), np.random.randint(0, 9))
+            #coordinate = (0,0)
+            while coordinate in excluded_coordinates:
+                coordinate = (np.random.randint(0, 9), np.random.randint(0, 9))
+            randomState = (coordinate[0], coordinate[1])
         else:
             randomState = (0,0)
-            
+        
         self.state = np.array(randomState)
         self.done = False
         self.reward = 0
@@ -210,7 +211,7 @@ class starEnv(gym.Env):
             # Logic is that when agent is close to one block from the hell state
             ## 1 is for one block from the hell states
             if distance_from_closest_hurdle["distance"] <= 1.5:
-                self.reward   += -((round(distance_from_closest_hurdle["distance"]))*10)
+                self.reward   += -((round(distance_from_closest_hurdle["distance"]))*2)
             else:
                 self.reward = 0
                 

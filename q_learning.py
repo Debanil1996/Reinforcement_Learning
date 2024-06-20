@@ -1,10 +1,12 @@
 # Imports:
 # --------
+from functools import reduce
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import copy
 import gymnasium as gym
+import os
 
 
 # Function 1: Train Q-learning agent
@@ -92,7 +94,7 @@ def train_q_learning(env:gym.Env,
         #! -------
         print(f"Current Epsilon of Episode {episode}",epsilon)
         
-        epsilon = min(epsilon_min, epsilon * epsilon_decay)
+        epsilon = max(epsilon_min, epsilon * epsilon_decay)
 
         print(f"Episode {episode + 1}: Total Reward: {total_reward}")
 
@@ -103,7 +105,9 @@ def train_q_learning(env:gym.Env,
 
     #! Step 8: Save the trained Q-table
     #! -------
+    idpath = os.path.join("npyfiles",str(id(q_table))+q_table_save_path)
     np.save(q_table_save_path, q_table)
+    np.save(idpath,q_table)
     print("Q Table",q_table)
     print("Saved the Q-table.")
 
@@ -173,15 +177,28 @@ def test_q_table(env, no_episodes, epsilon, q_table_save_path="q_table.npy", act
     total_reward = 0
     path = [state]
     done= False
-
+    prev_action = ""
+    mappedAction = {}
     while not done:
-        mappedAction = {action: 0 for action in actions}
-        for indx, action in enumerate(actions):
-            mappedAction[action] = loaded_q_table[state[0]][state[1]][indx]
-            
+        print(len(mappedAction))
+        if len(mappedAction) == 0:
+            prev_action = ""
+            mappedAction = {action: 0 for action in actions}
+            for indx, action in enumerate(actions):
+                np_arrayed = np.array(loaded_q_table[:][:][indx])
+                mappedAction[action] = reduce(lambda x, y: x + y, np_arrayed.flatten())
+        
+           
         max_key = max(mappedAction, key=mappedAction.get)
+        while max_key == prev_action:
+            mappedAction.pop(max_key)
+            max_key = max(mappedAction, key=mappedAction.get)
+        prev_action  = max_key
         maxActionValue = [indx for indx,val in enumerate(actions) if val == max_key ][0]
-        action = generate_random_int_without_repeat(0,4) if any(mappedAction) else maxActionValue
+        
+        action = maxActionValue if any(mappedAction) else generate_random_int_without_repeat(0,4)
+        
+            
         next_state, reward, done, _ = env.step(action)
         env.render()
 

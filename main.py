@@ -2,16 +2,16 @@ from constants import HELL_COORDINATE_POINTS
 from starways_env import create_env
 from q_learning import train_q_learning, visualize_q_table,test_q_table
 
-train = False
-visualize_results = False
-test_results = True
+train = True
+visualize_results = True
+test_results = False
 
 learning_rate = 0.01  # Learning rate
 gamma = 0.99  # Discount factor
 epsilon = 1.0  # Exploration rate
-epsilon_min = 0.1  # Minimum exploration rate
-epsilon_decay = 0.992  # Decay rate for exploration
-no_episodes = 20_000  # Number of episodes
+epsilon_min = 0.01  # Minimum exploration rate
+epsilon_decay = 0.999  # Decay rate for exploration
+no_episodes = 10_000  # Number of episodes
 
 goal_coordinates = (9, 9)
 # Define all hell state coordinates as a tuple within a list
