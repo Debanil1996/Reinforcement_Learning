@@ -47,6 +47,4 @@ if test_results:
     new_env = create_env(goal_coordinates=goal_coordinates,
                hell_state_coordinates=hell_state_coordinates)
     
-    test_q_table(env=new_env,
-                no_episodes=no_episodes,
-                epsilon=epsilon)
+    test_q_table(env=new_env)

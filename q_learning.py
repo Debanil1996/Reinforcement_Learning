@@ -187,15 +187,15 @@ def visualize_q_table(hell_state_coordinates=[(2, 1), (0, 4)],
         
         
         
-def test_q_table(env, no_episodes, epsilon, q_table_save_path="q_table.npy", actions=["Up", "Down", "Right", "Left"]):
+def test_q_table(env, q_table_save_path="q_table.npy", actions=["Up", "Down", "Right", "Left"]):
     """_summary_ Test the Q Table 
 
     Args:
         env (_type_): Environment
-        no_episodes (_type_): _description_
-        epsilon (_type_): _description_
-        q_table_save_path (str, optional): _description_. Defaults to "q_table.npy".
-        actions (list, optional): _description_. Defaults to ["Up", "Down", "Right", "Left"].
+        no_episodes (_type_): Stories
+        epsilon (_type_): Decay Factor
+        q_table_save_path (str, optional): The Path Q table is saved. Defaults to "q_table.npy".
+        actions (list, optional): The action which the Agent will take. Defaults to ["Up", "Down", "Right", "Left"].
     """
     try:
         loaded_q_table = np.load(q_table_save_path)
