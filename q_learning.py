@@ -36,7 +36,19 @@ def train_q_learning(env:gym.Env,
                      gamma,
                      q_table_save_path="q_table.npy",
                      train_render=True):
+    """_summary_ To Train the Q Learning Agent
 
+    Args:
+        env (gym.Env): The environment
+        no_episodes (_type_): Number of stories
+        epsilon (_type_): Exploration factor
+        epsilon_min (_type_): Minimum Exploration Factor
+        epsilon_decay (_type_): Decay factor of Exploration
+        alpha (_type_): _description_
+        gamma (_type_): Discount Factor
+        q_table_save_path (str, optional): To save in a npy file as Q table. Defaults to "q_table.npy".
+        train_render (bool, optional): Control Based on rendering and re rendering. Defaults to True.
+    """
     # Initialize the Q-table:
     # -----------------------
     q_table = np.zeros((env.grid_size, env.grid_size, env.action_space.n))
@@ -120,6 +132,14 @@ def visualize_q_table(hell_state_coordinates=[(2, 1), (0, 4)],
                       goal_coordinates=(4, 4),
                       actions=["Up", "Down", "Right", "Left"],
                       q_values_path="q_table.npy"):
+    """_summary_ To Visually See the Q Table
+
+    Args:
+        hell_state_coordinates (list, optional): _description_. Defaults to [(2, 1), (0, 4)].
+        goal_coordinates (tuple, optional): _description_. Defaults to (4, 4).
+        actions (list, optional): _description_. Defaults to ["Up", "Down", "Right", "Left"].
+        q_values_path (str, optional): To save in a npy file as Q table. Defaults to "q_table.npy".
+    """
 
     # Load the Q-table:
     # -----------------
@@ -168,6 +188,15 @@ def visualize_q_table(hell_state_coordinates=[(2, 1), (0, 4)],
         
         
 def test_q_table(env, no_episodes, epsilon, q_table_save_path="q_table.npy", actions=["Up", "Down", "Right", "Left"]):
+    """_summary_ Test the Q Table 
+
+    Args:
+        env (_type_): Environment
+        no_episodes (_type_): _description_
+        epsilon (_type_): _description_
+        q_table_save_path (str, optional): _description_. Defaults to "q_table.npy".
+        actions (list, optional): _description_. Defaults to ["Up", "Down", "Right", "Left"].
+    """
     try:
         loaded_q_table = np.load(q_table_save_path)
     except FileNotFoundError:
