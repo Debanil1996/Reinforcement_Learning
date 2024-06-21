@@ -4,9 +4,13 @@ from q_learning import train_q_learning, visualize_q_table,test_q_table
 
 # Control Line For Training ,Testing and Visualization
 
+# To start Training the Agent
 train = False
+# To Check Rendering by turning on or off
 train_render = False
+# To Visualize the QTable turning on or off
 visualize_results = False
+# To Test the Agent in the Environment Turning On or Off
 test_results = True
 
 learning_rate = 0.01  # Learning rate
@@ -21,6 +25,7 @@ goal_coordinates = (9, 9)
 hell_state_coordinates = HELL_COORDINATE_POINTS
 
 
+# For Training the Agent
 if train:
     
     env = create_env(goal_coordinates=goal_coordinates,
@@ -35,13 +40,13 @@ if train:
                      gamma=gamma,
                      train_render=train_render)
     
-    
+# For Visualizing the agent    
 if visualize_results:
     visualize_q_table(hell_state_coordinates=hell_state_coordinates,
                       goal_coordinates=goal_coordinates,
                       q_values_path="q_table.npy")
     
-    
+# For Testing the Agent    
 if test_results:
     
     new_env = create_env(goal_coordinates=goal_coordinates,
