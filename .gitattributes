@@ -1,1 +1,2 @@
 npyfiles filter=lfs diff=lfs merge=lfs -text
+npyfiles/ export-ignore
