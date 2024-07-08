@@ -123,7 +123,7 @@ class starEnv(gym.Env):
                 coordinate = (np.random.randint(0, 9), np.random.randint(0, 9))
             randomState = (coordinate[0], coordinate[1])
         else:
-            randomState = (0,0)
+            randomState = (1,6)
         
         self.state = np.array(randomState)
         self.done = False
