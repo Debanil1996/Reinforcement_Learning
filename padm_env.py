@@ -275,7 +275,7 @@ class starEnv(gym.Env):
         goalRect = pygame.Rect(self.goal[1]*self.cell_size, self.goal[0]*self.cell_size, self.cell_size, self.cell_size)
         self.screen.blit(goal_ch_image,goalRect)
 
-        gifpath = os.path.join(os.getcwd(),'blackhole.jpg')
+        gifpath = os.path.join(os.getcwd(),'blackhole.webp')
         hurdleImage = pygame.image.load(gifpath).convert_alpha()
         
         # # Draw the hell-states:
@@ -285,9 +285,9 @@ class starEnv(gym.Env):
             self.screen.blit(hurdleChImage,hellRect)
 
         # Draw the agent:
-        agent_or_image = pygame.image.load('alien-icon.png').convert_alpha()
+        agent_or_image = pygame.image.load('alien-icon.webp').convert_alpha()
         if(self.agent_health < 100):
-            agent_or_image = pygame.image.load('alien-icon-damage.png').convert_alpha()
+            agent_or_image = pygame.image.load('alien-icon-damage.webp').convert_alpha()
             pygame.display.update()
         agent_ch_image = pygame.transform.smoothscale(agent_or_image,(self.cell_size,self.cell_size))
         agentRect = pygame.Rect(self.state[1]*self.cell_size, self.state[0]*self.cell_size, self.cell_size, self.cell_size)
